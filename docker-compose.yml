@@ -1,0 +1,36 @@
+version: '3.3'
+services:
+  elasticsearch:
+    build:
+      context: deployments/elk/elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./deployments/elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./deployments/elk/elasticsearch/esdata:/var/lib/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx2g -Xms2g"
+      ELASTIC_PASSWORD: changeme
+    networks:
+      - web
+
+  kibana:
+    build:
+      context: deployments/elk/kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./deployments/elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    ports:
+      - "5601:5601"
+    networks:
+      - web
+    depends_on:
+      - elasticsearch
+
+networks:
+  web:
+    driver: bridge

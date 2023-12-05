@@ -5,70 +5,14 @@ import Form from 'react-bootstrap/Form';
 import Button from "react-bootstrap/Button";
 import "./App.css";
 
-const BASE_URL = "https://cf2f-2001-448a-4084-115c-fdd2-e233-6ea8-2e46.ngrok-free.app";
-
-const fetchSuggestions = async (query) => {
-  const payload = {
-    "suggest": {
-      "text": query,
-      "did_you_mean": {
-        "phrase": {
-          "field": "character.suggest",
-          "size": 3,
-          "confidence": 0.0,
-          "max_errors":2,
-          "collate": {
-            "query": { 
-              "source" : {
-                "match": {
-                  "{{field_name}}": {
-                    "query": "{{suggestion}}",
-                    "fuzziness": "1",
-                    "operator": "and"
-                  }
-                }
-              }
-            },
-            "params": {"field_name" : "character"}, 
-            "prune" :true
-          },
-          "highlight": {
-            "pre_tag": "<strong>",
-            "post_tag": "</strong>"
-          }
-        }
-      }
-    }
-  };
-
-  try {
-    const response = await fetch(
-      `${BASE_URL}/game-of-thrones,harry-potter/_search`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Basic ZWxhc3RpYzpjaGFuZ2VtZQ=='
-        },
-        body: JSON.stringify(payload)
-      }
-    );
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch(e) {
-    console.log(e);
-    return {};
-  }
-  // This assumes the API returns a JSON list of suggestions
-}
+const BASE_URL = "http://localhost:9200";
 
 const fetchSuggestionsMulti = async (query) => {
-  const payload = `{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"character.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"character\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"quote.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"quote\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"description.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"description\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"tags.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"tags\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n`;
+  const payload = `{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productName.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productName\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productSpecification.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productSpecification\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"aboutProduct.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"aboutProduct\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"categories.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"categories\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n`;
 
   try {
     const response = await fetch(
-      `${BASE_URL}/game-of-thrones,harry-potter/_msearch`,
+      `${BASE_URL}/products/_msearch`,
       {
         method: 'POST',
         headers: {
@@ -104,10 +48,10 @@ const fetchSuggestionsMulti = async (query) => {
 }
 
 const fetchSearch = async (query) => {
-  const payload = `{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"character\":\"${query}\"}},{\"fuzzy\":{\"character\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"quote\":\"${query}\"}},{\"fuzzy\":{\"quote\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"description\":\"${query}\"}},{\"fuzzy\":{\"description\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"tags\":\"${query}\"}},{\"fuzzy\":{\"tags\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n`;
+  const payload = `{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"productName\":\"${query}\"}},{\"fuzzy\":{\"productName\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"aboutProduct\":\"${query}\"}},{\"fuzzy\":{\"aboutProduct\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"productSpecification\":\"${query}\"}},{\"fuzzy\":{\"productSpecification\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"categories\":\"${query}\"}},{\"fuzzy\":{\"categories\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n`;
   try {
     const response = await fetch(
-      `${BASE_URL}/game-of-thrones,harry-potter/_msearch`,
+      `${BASE_URL}/products/_msearch`,
       {
         method: 'POST',
         headers: {
@@ -179,7 +123,7 @@ export default function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <div style={{ width: 200, margin: 20 }}>
+        <div style={{ width: 500, margin: 20 }}>
 
           <Form.Text style={{ marginBottom: 20 }}>Type something</Form.Text>
           <Form.Control 
@@ -212,7 +156,8 @@ export default function App() {
           <ListGroup>
             {searchResult.map((r, index) => (
                 <ListGroup.Item variant={index%2 == 0 ? "success" : "primary"} key={index}>
-                    {r.character}
+                    <p>{r.productName}</p>
+                    <a href={r.productUrl} target="blank">{r.productUrl}</a>
                 </ListGroup.Item>
                 // Render each result as a list item
             ))}
