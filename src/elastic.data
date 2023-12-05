@@ -1,0 +1,334 @@
+GET game-of-thrones,harry-potter/_search
+{
+  "suggest": {
+    "text": "hapy poter",
+    "did_you_mean": {
+      "phrase": {
+        "field": "character.suggest",
+        "size": 3,
+        "confidence": 1,
+        "max_errors":2,
+        "collate": {
+          "query": { 
+            "source" : {
+              "match": {
+                "{{field_name}}": {
+                  "query": "{{suggestion}}",
+                  "fuzziness": "1",
+                  "operator": "and"
+                }
+              }
+            }
+          },
+          "params": {"field_name" : "character"}, 
+          "prune" :true
+        },
+        "highlight": {
+          "pre_tag": "<strong>",
+          "post_tag": "</strong>"
+        }
+      }
+    }
+  }
+}
+
+GET game-of-thrones,harry-potter/_search
+
+PUT game-of-thrones/_mappings
+{
+  "properties": {
+      "character": {
+        "type": "text",
+        "fields": {
+          "suggest": {
+            "type": "text",
+            "analyzer": "shingle_analyzer"
+          }
+        }
+      },
+      "quote": {
+        "type": "text",
+        "fields": {
+          "suggest": {
+            "type": "text",
+            "analyzer": "shingle_analyzer"
+          }
+        }
+      }
+    }
+}
+
+PUT game-of-thrones/_settings
+{
+  "analysis": {
+      "analyzer": {
+        "shingle_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "shingle_filter"
+          ]
+        }
+      },
+      "filter": {
+        "shingle_filter": {
+          "type": "shingle",
+          "min_shingle_size": 2,
+          "max_shingle_size": 3
+        }
+    }
+  }
+}
+
+DELETE game-of-thrones
+
+PUT game-of-thrones
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "shingle_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "shingle_filter"
+          ]
+        }
+      },
+      "filter": {
+        "shingle_filter": {
+          "type": "shingle",
+          "min_shingle_size": 2,
+          "max_shingle_size": 3
+        }
+    }
+  }
+  },
+  "mappings": {
+    "properties": {
+      "character": {
+        "type": "text",
+        "fields": {
+          "suggest": {
+            "type": "text",
+            "analyzer": "shingle_analyzer"
+          }
+        }
+      },
+      "quote": {
+        "type": "text",
+        "fields": {
+          "suggest": {
+            "type": "text",
+            "analyzer": "shingle_analyzer"
+          }
+        }
+      },
+      "tags": {
+        "type": "text",
+        "fields": {
+          "suggest": {
+            "type": "text",
+            "analyzer": "shingle_analyzer"
+          }
+        }
+      }
+    }
+  }
+}
+
+PUT harry-potter
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "shingle_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "shingle_filter"
+          ]
+        }
+      },
+      "filter": {
+        "shingle_filter": {
+          "type": "shingle",
+          "min_shingle_size": 2,
+          "max_shingle_size": 3
+        }
+    }
+  }
+  },
+  "mappings": {
+    "properties": {
+      "character": {
+        "type": "text",
+        "fields": {
+          "suggest": {
+            "type": "text",
+            "analyzer": "shingle_analyzer"
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "fields": {
+          "suggest": {
+            "type": "text",
+            "analyzer": "shingle_analyzer"
+          }
+        }
+      },
+      "tags": {
+        "type": "text",
+        "fields": {
+          "suggest": {
+            "type": "text",
+            "analyzer": "shingle_analyzer"
+          }
+        }
+      }
+    }
+  }
+}
+
+POST game-of-thrones/_doc
+{
+  "character": "Ned Stark",
+  "quote": "winter is coming",
+  "tags": ["got", "north", "stark"]
+}
+
+POST game-of-thrones/_doc
+{
+  "character": "Daenerys Targaryen",
+  "quote": "I am the blood of the dragon.",
+  "tags": ["dragon", "targaryen", "got"]
+}
+
+POST game-of-thrones/_doc
+{
+  "character": "Tyrion Lannister",
+  "quote": "A mind needs books like a sword needs a whetstone.",
+  "tags": ["got", "lannister", "dwarf", "smart"]
+}
+
+POST harry-potter/_doc
+{
+  "character": "Harry Potter",
+  "description": "voldemort hunter, main character",
+  "tags": ["hp", "good", "wizard"]
+}
+
+POST harry-potter/_doc
+{
+  "character": "Ronald Weasly",
+  "description": "red hair, harry's friend",
+  "tags": ["weasleys", "good", "wizard", "red", "weasly"]
+}
+
+POST harry-potter/_doc
+{
+  "character": "Sirius Black",
+  "description": "harry's God Father",
+  "tags": ["hp", "good", "wizard", "black"]
+}
+
+POST harry-potter/_doc
+{
+  "character": "Ned Weasly",
+  "description": "black hair, harry's friend",
+  "tags": ["weasleys", "good", "wizard", "red", "weasly"]
+}
+
+POST harry-potter/_doc
+{
+  "character": "Draco Malfoy",
+  "description": "black hair, harry's friend",
+  "tags": ["malfoys", "bad", "wizard", "death", "death eater"]
+}
+
+GET _cat/indices
+
+GET game-of-thrones,harry-potter/_search
+{
+  "query": {
+    "match": {
+      "character": "happy"
+    }
+  }
+}
+
+GET game-of-thrones,harry-potter/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "character": "dwarf"
+          }
+        },
+        {
+          "fuzzy": {
+            "character": {
+              "value": "dwarf",
+              "fuzziness": 2
+            }
+          }
+        },
+        {
+          "term": {
+            "tags": {
+              "value": "dwarf"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+GET game-of-thrones,harry-potter/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "tags": "got"
+          }
+        },
+        {
+          "fuzzy": {
+            "tags": {
+              "value": "got",
+              "fuzziness": 2
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+GET game-of-thrones,harry-potter/_search
+{
+  "query": {
+    "fuzzy": {
+      "character": {
+        "value": "harry p",
+        "fuzziness": 2
+      }
+    }
+  }
+}
+
+POST game-of-thrones,harry-potter/_msearch
+{}
+{"query":{"bool":{"should":[{"match":{"character":"need"}},{"fuzzy":{"character":{"value":"need","fuzziness":2}}}]}}}
+{}
+{"query":{"bool":{"should":[{"match":{"quote":"need"}},{"fuzzy":{"character":{"value":"need","fuzziness":2}}}]}}}
