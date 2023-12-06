@@ -1,3 +1,4 @@
+#### MAPPING
 PUT products
 {
   "settings": {
@@ -74,3 +75,25 @@ PUT products
     }
   }
 }
+
+#### SEARCH SUGGESTION
+POST products/_msearch
+{}
+{"suggest":{"text":"dwurf","did_you_mean":{"phrase":{"field":"productName.suggest","size":5,"confidence":0.0,"max_errors":2,"collate":{"query":{"source":{"match":{"{{field_name}}":{"query":"{{suggestion}}","fuzziness":"2","operator":"and"}}}},"params":{"field_name":"productName"},"prune":true},"highlight":{"pre_tag":"<strong>","post_tag":"</strong>"}}}}}
+{}
+{"suggest":{"text":"dwurf","did_you_mean":{"phrase":{"field":"aboutProduct.suggest","size":5,"confidence":0.0,"max_errors":2,"collate":{"query":{"source":{"match":{"{{field_name}}":{"query":"{{suggestion}}","fuzziness":"2","operator":"and"}}}},"params":{"field_name":"aboutProduct"},"prune":true},"highlight":{"pre_tag":"<strong>","post_tag":"</strong>"}}}}}
+{}
+{"suggest":{"text":"dwurf","did_you_mean":{"phrase":{"field":"productSpecification.suggest","size":5,"confidence":0.0,"max_errors":2,"collate":{"query":{"source":{"match":{"{{field_name}}":{"query":"{{suggestion}}","fuzziness":"2","operator":"and"}}}},"params":{"field_name":"productSpecification"},"prune":true},"highlight":{"pre_tag":"<strong>","post_tag":"</strong>"}}}}}
+{}
+{"suggest":{"text":"dwurf","did_you_mean":{"phrase":{"field":"categories.suggest","size":5,"confidence":0.0,"max_errors":2,"collate":{"query":{"source":{"match":{"{{field_name}}":{"query":"{{suggestion}}","fuzziness":"2","operator":"and"}}}},"params":{"field_name":"categories"},"prune":true},"highlight":{"pre_tag":"<strong>","post_tag":"</strong>"}}}}}
+
+#### SEARCH
+POST products/_msearch
+{}
+{"query":{"bool":{"should":[{"match":{"productName":"Gundam"}},{"fuzzy":{"productName":{"value":"Gundam","fuzziness":2}}}]}}}
+{}
+{"query":{"bool":{"should":[{"match":{"aboutProduct":"Gundam"}},{"fuzzy":{"aboutProduct":{"value":"Gundam","fuzziness":2}}}]}}}
+{}
+{"query":{"bool":{"should":[{"match":{"productSpecification":"Gundam"}},{"fuzzy":{"productSpecification":{"value":"Gundam","fuzziness":2}}}]}}}
+{}
+{"query":{"bool":{"should":[{"match":{"categories":"Gundam"}},{"fuzzy":{"categories":{"value":"Gundam","fuzziness":2}}}]}}}
