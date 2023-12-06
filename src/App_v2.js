@@ -3,22 +3,12 @@ import HTMLReactParser from "html-react-parser";
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from "react-bootstrap/Button";
-import {
-  Typeahead,
-  Highlighter,
-  Menu,
-  MenuItem,
-  withAsync
-} from 'react-bootstrap-typeahead';
-
 import "./App.css";
-
-const AsyncTypeahead = withAsync(Typeahead);
 
 const BASE_URL = "http://localhost:9200";
 
 const fetchSuggestionsMulti = async (query) => {
-  const payload = `{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productName.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productName\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productSpecification.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productSpecification\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"aboutProduct.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"aboutProduct\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"categories.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"categories\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n`;
+  const payload = `{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productName.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productName\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productSpecification.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productSpecification\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"aboutProduct.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"aboutProduct\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"categories.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"categories\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong>\",\"post_tag\":\"</strong>\"}}}}}\r\n`;
 
   try {
     const response = await fetch(
@@ -33,6 +23,7 @@ const fetchSuggestionsMulti = async (query) => {
       }
     );
     const data = await response.json();
+      console.log(data);
     let newData = [];
     for (let i = 0; i < data.responses.length; i++) {
       const r = data.responses[i];
@@ -94,80 +85,72 @@ export default function App() {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [emptySuggestion, setEmptySuggestion] = useState(false);
+  const [disableSearchButton, setDisableSearchButton] = useState(true);
   const [searchResult, setSearchResult] = useState([]);
-
 
   let debounceInputValueTimeout;
   
   useEffect(() => {
-    // if (!emptySuggestion) {
-    //   // Debouncing User Input
-    //   // This reduces the number of requests made and offers a more efficient experience.
-    //   clearTimeout(debounceInputValueTimeout);
-    //   debounceInputValueTimeout = setTimeout(() => {
-    //     fetchSuggestionsMulti(inputValue).then(suggestionsData => {
-    //       console.log(suggestionsData)
-    //       setSuggestions(suggestionsData);
-    //     }).catch(e => {
-    //       console.log(e);
-    //     });
-    //   }, 1500);
+    if (!emptySuggestion) {
+      // Debouncing User Input
+      // This reduces the number of requests made and offers a more efficient experience.
+      clearTimeout(debounceInputValueTimeout);
+      debounceInputValueTimeout = setTimeout(() => {
+        fetchSuggestionsMulti(inputValue).then(suggestionsData => {
+          setSuggestions(suggestionsData);
+        }).catch(e => {
+          console.log(e);
+        });
+      }, 1500);
       
-    // }
+    }
     
   }, [inputValue, emptySuggestion, debounceInputValueTimeout]);
 
-  const handleSearchEvent = (query) => {
-    fetchSearch(query).then(result => {
+  const handleSuggestionClick = (suggestion) => {
+    setInputValue(suggestion);
+    setSuggestions([]);
+  };
+
+  const handleSearchButton = () => {
+    fetchSearch(inputValue).then(result => {
       setSearchResult(result);
     }).catch(e => {
       console.log(e);
     });
   };
 
-  const filterBy = () => true;
-
   return (
     <div className="App">
       <header className="App-header">
         <div style={{ width: 500, margin: 20 }}>
-        
-        <Form.Group>
-            <Form.Label>Search Here</Form.Label>
-            <AsyncTypeahead
-              filterBy={filterBy}
-              id="basic-typeahead-single"
-              isLoading={emptySuggestion}
-              labelKey="text"
-              onSearch={s => {
-                setEmptySuggestion(true);
-                fetchSuggestionsMulti(s).then(suggestionsData => {
-                  // console.log(suggestionsData);
-                  setSuggestions(suggestionsData);
-                  setEmptySuggestion(false);
-                }).catch(e => {
-                  console.log(e);
-                });
-              }}
 
-              onChange={s => {
-                if (s.length > 0) {
-                  handleSearchEvent(s[0].text);
-                }
-              }}
+          <Form.Text style={{ marginBottom: 20 }}>Type something</Form.Text>
+          <Form.Control 
+            type="text"
+            value={inputValue}
+            onChange={e => { 
+              setInputValue(e.target.value);
+              setEmptySuggestion(false);
+            }} 
+            style={{ marginBottom: 10 }}
+            // Capturing and storing every change in inputValue
+          />
+          <Button style={{ marginBottom: 20 }}  disabled={disableSearchButton} onClick={handleSearchButton}>Search</Button>
 
-              options={suggestions}
-              
-              renderMenuItemChildren={(option, props, index) => { 
-                console.log(option);
-                return (<span key={index}>{HTMLReactParser(option.highlighted)}</span>)}
-              }
-
-              placeholder="search"
-              maxResults={10}
-              minLength={3}
-            />
-        </Form.Group>
+        {suggestions.length > 0 &&
+          <ListGroup>
+            {suggestions.map((suggestion, index) => (
+                <ListGroup.Item variant="light" key={index} onClick={() => { 
+                  handleSuggestionClick(suggestion.text);
+                  setEmptySuggestion(true);
+                  setDisableSearchButton(false);
+                  }}>
+                    {HTMLReactParser(suggestion.highlighted)}
+                </ListGroup.Item>
+                // Render each suggestion as a list item
+            ))}
+        </ListGroup>}
 
         {searchResult.length > 0 &&
           <ListGroup>

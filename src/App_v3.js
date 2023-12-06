@@ -8,12 +8,9 @@ import {
   Highlighter,
   Menu,
   MenuItem,
-  withAsync
 } from 'react-bootstrap-typeahead';
 
 import "./App.css";
-
-const AsyncTypeahead = withAsync(Typeahead);
 
 const BASE_URL = "http://localhost:9200";
 
@@ -100,20 +97,20 @@ export default function App() {
   let debounceInputValueTimeout;
   
   useEffect(() => {
-    // if (!emptySuggestion) {
-    //   // Debouncing User Input
-    //   // This reduces the number of requests made and offers a more efficient experience.
-    //   clearTimeout(debounceInputValueTimeout);
-    //   debounceInputValueTimeout = setTimeout(() => {
-    //     fetchSuggestionsMulti(inputValue).then(suggestionsData => {
-    //       console.log(suggestionsData)
-    //       setSuggestions(suggestionsData);
-    //     }).catch(e => {
-    //       console.log(e);
-    //     });
-    //   }, 1500);
+    if (!emptySuggestion) {
+      // Debouncing User Input
+      // This reduces the number of requests made and offers a more efficient experience.
+      clearTimeout(debounceInputValueTimeout);
+      debounceInputValueTimeout = setTimeout(() => {
+        fetchSuggestionsMulti(inputValue).then(suggestionsData => {
+          console.log(suggestionsData)
+          setSuggestions(suggestionsData);
+        }).catch(e => {
+          console.log(e);
+        });
+      }, 1500);
       
-    // }
+    }
     
   }, [inputValue, emptySuggestion, debounceInputValueTimeout]);
 
@@ -125,8 +122,6 @@ export default function App() {
     });
   };
 
-  const filterBy = () => true;
-
   return (
     <div className="App">
       <header className="App-header">
@@ -134,38 +129,21 @@ export default function App() {
         
         <Form.Group>
             <Form.Label>Search Here</Form.Label>
-            <AsyncTypeahead
-              filterBy={filterBy}
+            <Typeahead
               id="basic-typeahead-single"
-              isLoading={emptySuggestion}
-              labelKey="text"
-              onSearch={s => {
-                setEmptySuggestion(true);
-                fetchSuggestionsMulti(s).then(suggestionsData => {
-                  // console.log(suggestionsData);
-                  setSuggestions(suggestionsData);
-                  setEmptySuggestion(false);
-                }).catch(e => {
-                  console.log(e);
-                });
+              labelKey={op => `${HTMLReactParser(op.highlighted)}`}
+              onInputChange={(text, e) => { 
+                console.log(text);
+                setInputValue(text);
+                setEmptySuggestion(false);
               }}
-
               onChange={s => {
                 if (s.length > 0) {
                   handleSearchEvent(s[0].text);
                 }
               }}
-
               options={suggestions}
-              
-              renderMenuItemChildren={(option, props, index) => { 
-                console.log(option);
-                return (<span key={index}>{HTMLReactParser(option.highlighted)}</span>)}
-              }
-
               placeholder="search"
-              maxResults={10}
-              minLength={3}
             />
         </Form.Group>
 

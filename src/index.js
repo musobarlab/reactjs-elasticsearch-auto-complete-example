@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 
 // Importing the Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 import App from "./App";
 
