@@ -11,6 +11,8 @@ import {
   withAsync
 } from 'react-bootstrap-typeahead';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import "./App.css";
 
 const AsyncTypeahead = withAsync(Typeahead);
@@ -44,14 +46,19 @@ const fetchSuggestionsMulti = async (query) => {
       if (r.suggest.did_you_mean[0].options.length > 0) {
         for (let j = 0; j < r.suggest.did_you_mean[0].options.length; j++) {
           let h = r.suggest.did_you_mean[0].options[j];
+          h.id = uuidv4();
           newData.push(h);
         }
       }
     }
+
+    // remove duplicate result from multi search
+    let seen = {};
+    newData = newData.filter(v => seen.hasOwnProperty(v.text) ? false : (seen[v.text] = true)).sort((a, b) => a.score - b.score);
     return newData;
   } catch(e) {
     console.log(e);
-    return {};
+    return [];
   }
   // This assumes the API returns a JSON list of suggestions
 }
@@ -85,7 +92,7 @@ const fetchSearch = async (query) => {
     return newData;
   } catch(e) {
     console.log(e);
-    return {};
+    return [];
   }
   // This assumes the API returns a JSON list of suggestions
 }
@@ -147,6 +154,7 @@ export default function App() {
               options={suggestions}
               
               renderMenuItemChildren={(option, props, index) => { 
+                console.log(option);
                 return (<span key={index}>{HTMLReactParser(option.highlighted)}</span>)}
               }
 
