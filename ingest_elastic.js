@@ -45,7 +45,7 @@ const main = () => {
         esClient.bulk({
             refresh: true,
             body: operations
-        })
+        }).catch(e => console.log('elastic ingest error: ', e));
     });
 
 

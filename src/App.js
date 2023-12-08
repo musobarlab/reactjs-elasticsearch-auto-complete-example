@@ -91,31 +91,10 @@ const fetchSearch = async (query) => {
 }
 
 export default function App() {
-  const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [emptySuggestion, setEmptySuggestion] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
-
-
-  let debounceInputValueTimeout;
-  
-  useEffect(() => {
-    // if (!emptySuggestion) {
-    //   // Debouncing User Input
-    //   // This reduces the number of requests made and offers a more efficient experience.
-    //   clearTimeout(debounceInputValueTimeout);
-    //   debounceInputValueTimeout = setTimeout(() => {
-    //     fetchSuggestionsMulti(inputValue).then(suggestionsData => {
-    //       console.log(suggestionsData)
-    //       setSuggestions(suggestionsData);
-    //     }).catch(e => {
-    //       console.log(e);
-    //     });
-    //   }, 1500);
-      
-    // }
-    
-  }, [inputValue, emptySuggestion, debounceInputValueTimeout]);
+  const [popularSearch, setPopularSearch] = useState({});
 
   const handleSearchEvent = (query) => {
     fetchSearch(query).then(result => {
@@ -142,7 +121,6 @@ export default function App() {
               onSearch={s => {
                 setEmptySuggestion(true);
                 fetchSuggestionsMulti(s).then(suggestionsData => {
-                  // console.log(suggestionsData);
                   setSuggestions(suggestionsData);
                   setEmptySuggestion(false);
                 }).catch(e => {
@@ -152,16 +130,43 @@ export default function App() {
 
               onChange={s => {
                 if (s.length > 0) {
-                  handleSearchEvent(s[0].text);
+                  const query = s[0].text;
+                  if (!popularSearch.hasOwnProperty(query)) {
+                    popularSearch[query] = 1;
+                  } else {
+                    popularSearch[query]++;
+                  }
+                  setPopularSearch({
+                    ...popularSearch
+                  });
+
+                  handleSearchEvent(query);
                 }
               }}
 
               options={suggestions}
               
               renderMenuItemChildren={(option, props, index) => { 
-                console.log(option);
                 return (<span key={index}>{HTMLReactParser(option.highlighted)}</span>)}
               }
+
+              onFocus={e => {
+                console.log('on focus');
+                if (Object.keys(popularSearch).length > 0) {
+                  const newPopularSearchDatas = Object.keys(popularSearch).sort((a, b) => popularSearch[b] - popularSearch[a]).map(v => {
+                    return {'text': v, 'highlighted': v};
+                  });
+                  
+                  console.log(newPopularSearchDatas);
+                  
+                  setSuggestions(newPopularSearchDatas);
+                  console.log(suggestions);
+                }
+              }}
+
+              onBlur={() => {
+                setSuggestions([]);
+              }}
 
               placeholder="search"
               maxResults={10}
