@@ -47,15 +47,15 @@ async def index(file: UploadFile):
             "_source": ["productName", "image"],
             "query": {
                 "script_score": {
-                "query": {
-                    "match_all": {}
-                },
-                "script": {
-                    "source": "cosineSimilarity(params.query_vector, doc['imageVector']) + 1.0",
-                    "params": {
-                        "query_vector": img_emb.tolist()
+                    "query": {
+                        "match_all": {}
+                    },
+                    "script": {
+                        "source": "cosineSimilarity(params.query_vector, doc['imageVector']) + 1.0",
+                        "params": {
+                            "query_vector": img_emb.tolist()
+                        }
                     }
-                }
                 }
             }
         }
@@ -67,7 +67,6 @@ async def index(file: UploadFile):
 
         return {'success': True, 'message': 'search result', 'data': response}
     except Exception as e:
-        log.error('here')
         log.error(e)
         return {'success': False, 'message': 'search error'}
     finally:
