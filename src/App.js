@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from "react-bootstrap/Button";
 import Col from 'react-bootstrap/Col';
@@ -61,8 +60,7 @@ export default function App() {
     };
 
     return (
-        <div className="App">
-        <header className="App-header">
+        <div>
             <div style={{ width: 500, margin: 20 }}>
                 <Form onSubmit={handleSubmit(handleSearchEvent)}>
                     <Form.Group controlId="formFile" className="mb-3">
@@ -72,18 +70,17 @@ export default function App() {
                     <Button variant="primary" type="submit">Search</Button>
                 </Form>
             </div>
-        </header>
 
-        {searchResult.length > 0 &&
-            <Container>
-                {searchResult.map((r, index) => (
-                    <Row key={index}>
-                        <Col xs={6} md={4}>
-                            <Image src={r.image} rounded />
-                        </Col>
-                    </Row>
-                ))}
-            </Container>}
+            {searchResult.length > 0 &&
+                <Container>
+                    {searchResult.map((r, index) => (
+                        <Row key={index}>
+                            <Col xs={6} md={4}>
+                                <Image src={r.image} thumbnail  />
+                            </Col>
+                        </Row>
+                    ))}
+                </Container>}
         </div>
     );
 }
