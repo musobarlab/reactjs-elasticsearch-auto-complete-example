@@ -23,11 +23,11 @@ if __name__ == '__main__':
     # loading tokenizer from the saved model path
     tokenizer = GPT2Tokenizer.from_pretrained(tokenized_data_path)
     tokenizer.add_special_tokens({
-        "eos_token": "</s>",
-        "bos_token": "<s>",
-        "unk_token": "<unk>",
-        "pad_token": "<pad>",
-        "mask_token": "<mask>"
+        "eos_token": "<|endoftext|>",
+        "bos_token": "<|endoftext|>",
+    #    "unk_token": "<unk>",
+    #    "pad_token": "<pad>",
+    #    "mask_token": "<mask>"
     })
 
     # creating the configurations from which the model can be made

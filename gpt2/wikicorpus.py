@@ -12,10 +12,13 @@ def store(corpus, lang):
         os.mkdir(store_path)
     file_idx=1
     for text in corpus.get_texts():
+        if file_idx == 24000:
+            break
         current_file_path = os.path.join(store_path, 'article_{}.txt'.format(file_idx))
         with open(current_file_path, 'w' , encoding='utf-8') as file:
             file.write(bytes(' '.join(text), 'utf-8').decode('utf-8'))
         #endwith
+        print(file_idx)
         file_idx += 1
     #endfor
 
@@ -28,6 +31,7 @@ def run(lang):
     file_path = tf.keras.utils.get_file(origin=origin, fname=fname, untar=False, extract=False)
     print(file_path)
     corpus = WikiCorpus(file_path, lower=False, tokenizer_func=tokenizer_func)
+    print('begin store')
     store(corpus, lang)
 
 if __name__ == '__main__':
