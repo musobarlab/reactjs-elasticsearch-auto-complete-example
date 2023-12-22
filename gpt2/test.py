@@ -9,13 +9,13 @@ from transformers import (
 )
 
 model_dir = './model_bn_custom/'
-tokenizer = GPT2TokenizerFast.from_pretrained(model_dir)
+tokenizer = GPT2Tokenizer.from_pretrained(model_dir)
 model = TFGPT2LMHeadModel.from_pretrained(model_dir)
 
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-text = "mencintai seseorang ? "
+text = "respon terhadap kejahatan seseorang"
 # encoding the input text
 input_ids = tokenizer.encode(text, return_tensors='tf')
 print(input_ids)
