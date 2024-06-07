@@ -20,7 +20,7 @@ const AsyncTypeahead = withAsync(Typeahead);
 const BASE_URL = "http://localhost:9200";
 
 const fetchSuggestionsMulti = async (query) => {
-  const payload = `{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productName.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productName\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productSpecification.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productSpecification\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"aboutProduct.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"aboutProduct\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"categories.suggest\",\"size\":5,\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"categories\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n`;
+  const payload = `{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productName.suggest\",\"size\":5,\"direct_generator\":[{\"field\":\"productName.suggest\",\"suggest_mode\":\"always\",\"min_word_length\":1}],\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productName\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"productSpecification.suggest\",\"size\":5,\"direct_generator\":[{\"field\":\"productSpecification.suggest\",\"suggest_mode\":\"always\",\"min_word_length\":1}],\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"productSpecification\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"aboutProduct.suggest\",\"size\":5,\"direct_generator\":[{\"field\":\"aboutProduct.suggest\",\"suggest_mode\":\"always\",\"min_word_length\":1}],\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"aboutProduct\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n{}\r\n{\"suggest\":{\"text\":\"${query}\",\"did_you_mean\":{\"phrase\":{\"field\":\"categories.suggest\",\"size\":5,\"direct_generator\":[{\"field\":\"categories.suggest\",\"suggest_mode\":\"always\",\"min_word_length\":1}],\"confidence\":0.0,\"max_errors\":2,\"collate\":{\"query\":{\"source\":{\"match\":{\"{{field_name}}\":{\"query\":\"{{suggestion}}\",\"fuzziness\":\"2\",\"operator\":\"and\"}}}},\"params\":{\"field_name\":\"categories\"},\"prune\":true},\"highlight\":{\"pre_tag\":\"<strong style='color:red;'>\",\"post_tag\":\"</strong>\"}}}}}\r\n`;
 
   try {
     const response = await fetch(
@@ -64,10 +64,11 @@ const fetchSuggestionsMulti = async (query) => {
 }
 
 const fetchSearch = async (query) => {
-  const payload = `{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"productName\":\"${query}\"}},{\"fuzzy\":{\"productName\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"aboutProduct\":\"${query}\"}},{\"fuzzy\":{\"aboutProduct\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"productSpecification\":\"${query}\"}},{\"fuzzy\":{\"productSpecification\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"categories\":\"${query}\"}},{\"fuzzy\":{\"categories\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n`;
+  // const payload = `{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"productName\":\"${query}\"}},{\"fuzzy\":{\"productName\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"aboutProduct\":\"${query}\"}},{\"fuzzy\":{\"aboutProduct\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"productSpecification\":\"${query}\"}},{\"fuzzy\":{\"productSpecification\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n{}\r\n{\"query\":{\"bool\":{\"should\":[{\"match\":{\"categories\":\"${query}\"}},{\"fuzzy\":{\"categories\":{\"value\":\"${query}\",\"fuzziness\":2}}}]}}}\r\n`;
+  const payload = `{\"query\":{\"multi_match\":{\"query\":\"${query}\",\"fields\":[\"productName",\"aboutProduct\",\"productSpecification\",\"categories\"]}}}`
   try {
     const response = await fetch(
-      `${BASE_URL}/products/_msearch`,
+      `${BASE_URL}/products/_search`,
       {
         method: 'POST',
         headers: {
@@ -80,13 +81,21 @@ const fetchSearch = async (query) => {
     const data = await response.json();
 
     let newData = [];
-    for (let i = 0; i < data.responses.length; i++) {
-      const r = data.responses[i];
-      if (r.hits.hits.length > 0) {
-        for (let j = 0; j < r.hits.hits.length; j++) {
-          let h = r.hits.hits[j];
-          newData.push(h._source);
-        }
+    // for (let i = 0; i < data.responses.length; i++) {
+    //   const r = data.responses[i];
+    //   if (r.hits.hits.length > 0) {
+    //     for (let j = 0; j < r.hits.hits.length; j++) {
+    //       let h = r.hits.hits[j];
+    //       newData.push(h._source);
+    //     }
+    //   }
+    // }
+
+    console.log(data)
+    if (data.hits.hits.length > 0) {
+      for (let j = 0; j < data.hits.hits.length; j++) {
+        let h = data.hits.hits[j];
+        newData.push(h._source);
       }
     }
     return newData;
