@@ -54,7 +54,7 @@ const fetchSuggestionsMulti = async (query) => {
 
     // remove duplicate result from multi search
     let seen = {};
-    newData = newData.filter(v => seen.hasOwnProperty(v.text) ? false : (seen[v.text] = true)).sort((a, b) => a.score - b.score);
+    newData = newData.filter(v => seen.hasOwnProperty(v.text) ? false : (seen[v.text] = true)).sort((a, b) => b.score - a.score);
     return newData;
   } catch(e) {
     console.log(e);
