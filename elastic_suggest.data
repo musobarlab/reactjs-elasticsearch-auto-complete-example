@@ -1,0 +1,104 @@
+PUT /company_index
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "autocomplete": {
+          "tokenizer": "autocomplete",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "autocomplete_search": {
+          "tokenizer": "lowercase"
+        }
+      },
+      "tokenizer": {
+        "autocomplete": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 20,
+          "token_chars": [
+            "letter"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "company_name": {
+        "type": "text",
+        "analyzer": "autocomplete",
+        "search_analyzer": "autocomplete_search"
+      }
+    }
+  }
+}
+
+
+POST /company_index/_doc
+{ "company_name": "Pt Samsung", "suggest": {"input": [ "Pt Samsung"]} }
+
+POST /company_index/_doc
+{ "company_name": "Pt Telkom", "suggest": {"input": [ "Pt Telkom"]}}
+
+POST /company_index/_doc
+{ "company_name": "Pt Indosat", "suggest": {"input": [ "Pt Indosat"]}}
+
+
+POST company_index/_search
+
+DELETE company_index
+
+POST /company_index/_search
+{
+  "suggest": {
+    "company-name-suggest": {
+      "text": "samk",
+      "phrase": {
+        "field": "company_name",
+        "size": 2,
+        "gram_size": 3,
+        "direct_generator": [
+          {
+            "field": "company_name",
+            "suggest_mode": "always",
+            "min_word_length": 1,
+            "max_edits": 2,
+            "prefix_length": 1
+          }
+        ],
+        "highlight": {
+          "pre_tag": "<em>",
+          "post_tag": "</em>"
+        },
+        "collate": {
+          "query": {
+            "source": {
+              "bool": {
+                "must": [
+                  { "match": { "company_name": "{{suggestion}}" } }
+                ]
+              }
+            }
+          },
+          "prune": true
+        }
+      }
+    }
+  }
+}
+
+
+POST company_index/_search
+{
+  "query": {
+    "match": {
+      "company_name": {
+        "query": "sams", 
+        "operator": "and"
+      }
+    }
+  }
+}
